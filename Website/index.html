@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Bandwidth</title>
     <link rel="stylesheet" href="app.css">
 </head>
 
@@ -59,14 +59,34 @@
             console.log("oogabooga");
             populateList();
 
+            var addButton = document.getElementsByClassName("addButton")[0];
+            addButton.addEventListener("click", async () => {
+                let itemText = prompt("Enter Task:");
+                let itemTextArray = itemText.split(/-(.+)/);
+                let itemObject = {
+                    "priority": Number(itemTextArray[0]),
+                    "text": itemTextArray[1].trim()
+                };
+                console.log(itemObject);
+                itemsCollection.insertOne(itemObject)
+                addItemToList(wrapper, itemObject, true);
+            })
+
             function populateList() {
                 var wrapper = document.getElementById("wrapper");
+                wrapper.innerHTML = '';
                 items.forEach(item => {
                     addItemToList(wrapper, item);
                 });
+                const template = document.createElement('div');
+                template.innerHTML = svgPlus;
+                template.classList.add("item");
+                template.classList.add("addButton");
+                wrapper.appendChild(template);
             }
 
-            function addItemToList(wrapper, item) {
+            function addItemToList(wrapper, item, newItem = false) {
+                
                 const template = document.createElement('div');
                 template.innerHTML = item.text;
                 template.classList.add("item");
@@ -82,10 +102,12 @@
                         
                 }
                 console.log(template.classList);
-                wrapper.appendChild(template);
+                newItem ? wrapper.insertBefore(template, wrapper.lastChild) : wrapper.appendChild(template);
             }
         }
         myFunction();
+
+        const svgPlus = '<svg height="25px" width="100%" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 495 495" xml:space="preserve"><polygon style="fill:#FFFFFF;" points="495,227.5 267.5,227.5 267.5,0 227.5,0 227.5,227.5 0,227.5 0,267.5 227.5,267.5 227.5,495 267.5,495 267.5,267.5 495,267.5 "/></svg>';
     </script>
 </body>
 
