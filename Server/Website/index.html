@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bandwidth</title>
+    <link rel="stylesheet" href="http://localhost:5000/getCSSFile">
+</head>
+
+<body>
+    <h1>Bandwidth</h1>
+    <div class="center">
+        <div id="wrapper">
+
+        </div>
+    </div>
+    <script>
+        async function myFunction() {
+            const response = await fetch("http://localhost:5000/getItems");
+            const items = await response.json();
+            populateList();
+
+            var itemButtons = Array.from(document.getElementsByClassName("item"));
+            console.log(itemButtons);
+            // itemButtons.forEach(itemButton => {
+            //     itemButton.addEventListener("click", async () => {
+            //         let itemId = itemButton.id;
+            //         if (confirm("Done?")) {
+            //             const response = await fetch(`http://localhost:5000/delete/?itemId=${itemId}`);
+            //             console.log(response);
+            //         } else {
+            //             console.log("OOGABOOGA");
+            //         }
+            //     })
+            // })
+            var addButton = document.getElementsByClassName("addButton")[0];
+            addButton.addEventListener("click", async () => {
+                let itemText = prompt("Enter Task:");
+                let itemTextArray = itemText.split(/-(.+)/);
+                let priority = Number(itemTextArray[0]);
+                let text = itemTextArray[1];
+                if (!text) text = itemTextArray[0];
+                if (!(priority > 0) && !(priority <= 3)) priority = 3;
+
+
+
+                const response = await fetch("http://localhost:5000/addItem", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        "priority": priority,
+                        "text": text.trim()
+                    }),
+                    headers: {
+                        "Content-Type": "application/json",
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                });
+
+                responseJson = await response.json();
+                console.log(responseJson)
+                let itemObject = {
+                    "_id": responseJson.insertedId,
+                    "priority": priority,
+                    "text": text.trim()
+                };
+                addItemToList(wrapper, itemObject, true);
+
+
+            })
+
+            function populateList() {
+                var wrapper = document.getElementById("wrapper");
+                wrapper.innerHTML = '';
+                items.forEach(item => {
+                    addItemToList(wrapper, item);
+                });
+                const template = document.createElement('div');
+                template.innerHTML = svgPlus;
+                template.classList.add("addButton");
+                wrapper.appendChild(template);
+            }
+
+            function addItemToList(wrapper, item, newItem = false) {
+
+                const template = document.createElement('div');
+                template.id = item._id.toString();
+
+                template.innerHTML = item.text;
+                template.classList.add("item");
+                switch (item.priority) {
+                    case 1:
+                        template.classList.add("priority1");
+                        break;
+                    case 2:
+                        template.classList.add("priority2");
+                        break;
+                    default:
+                        template.classList.add("priority3");
+
+                }
+
+                template.addEventListener("click", async () => {
+                    let itemId = template.id;
+                    if (confirm("Done?")) {
+                        const response = await fetch(`http://localhost:5000/delete/?itemId=${itemId}`);
+                        document.getElementById(itemId).remove();
+                        console.log(response);
+                    } else {
+                        console.log("OOGABOOGA");
+                    }
+                })
+                newItem ? wrapper.insertBefore(template, wrapper.lastChild) : wrapper.appendChild(template);
+            }
+        }
+        myFunction();
+
+        const svgPlus = '<svg height="25px" width="100%" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 495 495" xml:space="preserve"><polygon style="fill:#FFFFFF;" points="495,227.5 267.5,227.5 267.5,0 227.5,0 227.5,227.5 0,227.5 0,267.5 227.5,267.5 227.5,495 267.5,495 267.5,267.5 495,267.5 "/></svg>';
+    </script>
+</body>
+
+</html>
