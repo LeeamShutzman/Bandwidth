@@ -38,8 +38,8 @@ The system uses a **Federated Identity** pattern. The Auth Service acts as a gat
 To run the entire ecosystem locally, follow this startup order to ensure dependencies are available:
 
 1. **User Service** (Port `8082`): Start this first as it holds the identity source of truth.
-2. **Task Service** (Port `8083`): Requires valid JWTs issued by the Auth Service.
-3. **Auth Service** (Port `8084`): Configured to point to User Service via Feign.
+2. **Auth Service** (Port `8081`): Configured to point to User Service via Feign.
+3. **Task Service** (Port `8083`): Requires valid JWTs issued by the Auth Service.
 4. **Frontend** (Port `8081`): Launch the React UI to interact with the API.
 
 ---
